@@ -1,25 +1,32 @@
 package com.fastcampus.pass.repository.packaze;
 
+import com.fastcampus.pass.config.TestBatchConfig;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
 import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-//@Transactional
+@Transactional
 @SpringBootTest
 @ActiveProfiles("test")
+@ContextConfiguration(classes = TestBatchConfig.class)
 class PackageRepositoryTest {
 
     @Autowired
     private PackageRepository packageRepository;
+
+    @Autowired
+    private EntityManager entityManager;
 
     @Test
     public void test_save() {
@@ -68,6 +75,8 @@ class PackageRepositoryTest {
 
         // when
         int updatedCount = packageRepository.updateCountAndPeriod(packageEntity.getPackageSeq(), 30, 120);
+        entityManager.flush();
+        entityManager.clear();
         final PackageEntity updatedPackageEntity = packageRepository.findById(packageEntity.getPackageSeq()).get();
 
         // then
